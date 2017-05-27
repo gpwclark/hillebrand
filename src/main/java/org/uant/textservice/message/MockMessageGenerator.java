@@ -14,9 +14,9 @@ public class MockMessageGenerator implements ReceivedMessageHandler {
 
     public ReceivedMessage getMessage() {
         final String sender = UUID.randomUUID().toString();
-        final String message = UUID.randomUUID().toString();
+        final String body = UUID.randomUUID().toString();
         final long timestamp = date.getTime();
 
-        return new ReceivedMessage(sender, message, timestamp);
+        return new ReceivedMessage(sender, body, timestamp);
     }
 }
