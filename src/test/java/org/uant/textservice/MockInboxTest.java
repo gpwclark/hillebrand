@@ -5,6 +5,8 @@ import org.uant.textservice.db.MockInbox;
 import org.uant.textservice.message.ReceivedMessage;
 import org.uant.textservice.message.ReceivedMessageHandler;
 import org.uant.textservice.message.MockMessageGenerator;
+import org.uant.textservice.db.TestEmailGenerator;
+import java.util.UUID;
 
 import java.util.Map;
 
@@ -31,6 +33,7 @@ import org.junit.Test;
 public class MockInboxTest extends TestCase {
     private ReceivedMessageHandler msgGetter;
     private InboxHandler inbox;
+    private TestEmailGenerator testEmailGen;
 
     /**
      * Create the test case
@@ -52,6 +55,7 @@ public class MockInboxTest extends TestCase {
     public void setUp() {
         inbox = new MockInbox();
         msgGetter = new MockMessageGenerator();
+        testEmailGen = new TestEmailGenerator();
     }
 
     @After
@@ -61,13 +65,19 @@ public class MockInboxTest extends TestCase {
     @Test
     public void testInbox() {
 
-        ReceivedMessage msg = msgGetter.getMessage();
+        final String sender = testEmailGen.getRandomTestEmail();
+        final String body = UUID.randomUUID().toString();
+
+        ReceivedMessage msg = msgGetter.createMessage(sender, body);
+
         inbox.storeMessage(msg);
         Map record = inbox.getMessage(msg.hash);
 
         assertEquals(msg.sender, record.get("sender"));
         assertEquals(msg.body, record.get("body"));
-        assertEquals("false", record.get("processed"));
+        assertEquals("unknown", record.get("validResource"));
+        assertEquals("unknown", record.get("validRequest"));
+        assertEquals("false", record.get("sent"));
         assertEquals(Long.toString(msg.timestamp), record.get("timestamp"));
     }
 

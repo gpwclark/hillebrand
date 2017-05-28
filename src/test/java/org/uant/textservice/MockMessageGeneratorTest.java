@@ -3,6 +3,9 @@ package org.uant.textservice;
 import org.uant.textservice.message.ReceivedMessage;
 import org.uant.textservice.message.ReceivedMessageHandler;
 import org.uant.textservice.message.MockMessageGenerator;
+import org.uant.textservice.db.TestEmailGenerator;
+
+import java.util.UUID;
 
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -26,6 +29,7 @@ import org.junit.Test;
  */
 public class MockMessageGeneratorTest extends TestCase {
     private ReceivedMessageHandler msgGetter;
+    private TestEmailGenerator testEmailGen;
 
     /**
      * Create the test case
@@ -46,6 +50,8 @@ public class MockMessageGeneratorTest extends TestCase {
     @Before
     public void setUp() {
         msgGetter = new MockMessageGenerator();
+        testEmailGen = new TestEmailGenerator();
+
     }
 
     @After
@@ -53,9 +59,11 @@ public class MockMessageGeneratorTest extends TestCase {
     }
 
     @Test
-    public void testMessageGetter() {
+    public void testCreateMessage() {
+        final String sender = testEmailGen.getRandomTestEmail();
+        final String body = UUID.randomUUID().toString();
 
-        ReceivedMessage msg = msgGetter.getMessage();
+        ReceivedMessage msg = msgGetter.createMessage(sender, body);
         assertNotNull(msg.sender);
         assertNotNull(msg.body);
         assertNotNull(msg.timestamp);
