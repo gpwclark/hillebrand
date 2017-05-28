@@ -9,8 +9,6 @@ import org.uant.textservice.db.TestEmailGenerator;
 
 
 public final class ResourceDb {
-    TestEmailGenerator testEmailGen = new TestEmailGenerator();
-    final Set<String> validCustomers = new HashSet<String>(testEmailGen.getTestEmails());
     DataSource ds;
 
     public ResourceDb(DataSource ds){

@@ -10,7 +10,7 @@ import org.uant.textservice.db.TestEmailGenerator;
 import org.uant.textservice.logic.ProcessResponse;
 import org.uant.textservice.db.DataSourceFactory;
 
-import org.uant.textservice.mockCustomerData.CustomerDDL;
+import org.uant.textservice.mockData.getDDL;
 
 import java.sql.*;
 import javax.sql.DataSource;
@@ -67,7 +67,7 @@ public class ProcessResponseTest extends TestCase {
         try (
                 Connection conn = ds.getConnection();
             ){
-            String customers = CustomerDDL.getDDL("customer.ddl");
+            String customers = getDDL.get("customer.ddl");
             conn.createStatement().executeUpdate(customers);
         } catch (SQLException e) {
             e.printStackTrace();
