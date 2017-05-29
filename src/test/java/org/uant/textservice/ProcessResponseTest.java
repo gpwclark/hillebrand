@@ -1,4 +1,4 @@
-package org.pcweavers.textservice;
+package org.uant.textservice;
 
 import org.uant.textservice.message.ReceivedMessage;
 import org.uant.textservice.message.ReceivedMessageHandler;
