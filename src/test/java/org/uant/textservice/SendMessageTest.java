@@ -80,7 +80,7 @@ public class SendMessageTest extends TestCase {
     public void testSendMessage() {
         String validQuery = "aljdslskjdlkjldsjlsaSTATUSlkajaldskj";
 
-        //valid query and customer
+        //valid query and resource
             final String sender = testEmailGen.getRandomTestEmail();
             final String body = validQuery;
 

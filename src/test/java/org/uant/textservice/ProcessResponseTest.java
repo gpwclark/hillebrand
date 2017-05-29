@@ -88,7 +88,7 @@ public class ProcessResponseTest extends TestCase {
 
         ProcessResponse pr = new ProcessResponse(resourceDb, inbox);
 
-        //valid query and customer
+        //valid query and resource
         final String sender = testEmailGen.getRandomTestEmail();
         final String body = validQuery;
 
@@ -110,7 +110,7 @@ public class ProcessResponseTest extends TestCase {
         assertEquals(true, record.getProcessed());
         assertEquals(false, record.getSent());
 
-        //invalid query and valid customer
+        //invalid query and valid resource
         final String sender1 = testEmailGen.getRandomTestEmail();
         final String body1 = invalidQuery;
 

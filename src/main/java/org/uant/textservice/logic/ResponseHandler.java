@@ -3,15 +3,15 @@ package org.uant.textservice.logic;
 import org.uant.textservice.db.ResourceDb;
 import java.util.regex.Pattern;
 
-//TODO is it valid if a customer puts "status" in subject?
+//TODO is it valid if a resource puts "status" in subject?
 
-// if customer exists continue,
+// if resource exists continue,
 // else return invalid resource string
 //
 // if message says status continue
 // else return invalid command
 //
-// else get customer data from db and put in response
+// else get resource data from db and put in response
 public class ResponseHandler {
     ResourceDb resourceDb;
     public ResponseHandler(ResourceDb resourceDb) {

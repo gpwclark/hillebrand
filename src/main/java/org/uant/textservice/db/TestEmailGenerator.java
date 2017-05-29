@@ -9,7 +9,7 @@ import java.util.Properties;
 import java.io.IOException;
 
 public final class TestEmailGenerator {
-    String customer = "customer";
+    String resource = "resource";
     String emailSuffix = "@localhost.com";
     ArrayList<String> testEmails = new ArrayList<String>();
     int NUM_EMAILS = 40;
@@ -24,7 +24,7 @@ public final class TestEmailGenerator {
 //        }
 
         for (int i = 0; i < NUM_EMAILS; i++) {
-            testEmails.add(i, customer + String.valueOf(i) + emailSuffix);
+            testEmails.add(i, resource + String.valueOf(i) + emailSuffix);
         }
     }
 
