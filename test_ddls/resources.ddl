@@ -1,9 +1,9 @@
-CREATE TABLE customers(
+CREATE TABLE resources(
      id MEDIUMINT NOT NULL AUTO_INCREMENT,
      email VARCHAR(254) NOT NULL,
      PRIMARY KEY (id)
 );
-INSERT INTO customers
+INSERT INTO resources
     (`email`)
 VALUES
     ('customer0@localhost.com'),

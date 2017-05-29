@@ -15,32 +15,32 @@ public final class ResourceDb {
         this.ds = ds;
     }
 
-    public boolean isValidCustomer(String customerEmail) {
-        boolean isValidCustomer = false;
+    public boolean isValidResource(String resourceHandle) {
+        boolean isValidResource = false;
         try (
               Connection conn = ds.getConnection();
-              PreparedStatement statement = conn.prepareStatement("SELECT email FROM customers WHERE email=?");
+              PreparedStatement statement = conn.prepareStatement("SELECT email FROM resources WHERE email=?");
             ) {
-            statement.setString(1, customerEmail);
+            statement.setString(1, resourceHandle);
 
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
-                    if (customerEmail.equals(resultSet.getString("email")))
-                        isValidCustomer = true;
+                    if (resourceHandle.equals(resultSet.getString("email")))
+                        isValidResource = true;
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return isValidCustomer;
+        return isValidResource;
     }
 
-    public String getCustomerMessage(String customerEmail) {
-        boolean isValid = isValidCustomer(customerEmail);
+    public String getResourceMessage(String resourceHandle) {
+        boolean isValid = isValidResource(resourceHandle);
         if (isValid)
             //TODO actual DB lookup...
             return "all orders shipped";
         else
-            return "invalid customer";
+            return "invalid resource";
     }
 }

@@ -56,9 +56,9 @@ public class ProcessResponseTest extends TestCase {
         try (
                 Connection conn = ds.getConnection();
             ){
-            String customers = getDDL.get("test_ddls/customer.ddl");
+            String resources = getDDL.get("test_ddls/resources.ddl");
             String messages = getDDL.get("test_ddls/data_in_test.ddl");
-            conn.createStatement().executeUpdate(customers);
+            conn.createStatement().executeUpdate(resources);
             conn.createStatement().executeUpdate(messages);
         } catch (SQLException e) {
             e.printStackTrace();
@@ -74,7 +74,7 @@ public class ProcessResponseTest extends TestCase {
                 Connection conn = ds.getConnection();
             ){
             conn.createStatement().execute("DROP TABLE IF EXISTS MESSAGES;");
-            conn.createStatement().execute("DROP TABLE IF EXISTS CUSTOMERS;");
+            conn.createStatement().execute("DROP TABLE IF EXISTS RESOURCES;");
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -132,7 +132,7 @@ public class ProcessResponseTest extends TestCase {
         assertEquals(true, record.getProcessed());
         assertEquals(false, record.getSent());
 
-        //valid query and invalid customer
+        //valid query and invalid resource
         final String sender2 = "invalid@email.com";
         final String body2 = validQuery1;
 
@@ -140,7 +140,7 @@ public class ProcessResponseTest extends TestCase {
 
         inbox.insertMessage(msg2);
         MessageDBO record2 = pr.processMessageResponse(msg2.hash);
-        assertEquals("invalid customer", record2.getResponse());
+        assertEquals("invalid resource", record2.getResponse());
         assertEquals(false, record2.getValidResource());
         assertEquals(true, record2.getValidRequest());
         assertEquals(true, record2.getProcessed());
@@ -148,7 +148,7 @@ public class ProcessResponseTest extends TestCase {
 
         inbox.updateMessage(record2);
         record2 = inbox.getMessage(record2.getHash());
-        assertEquals("invalid customer", record2.getResponse());
+        assertEquals("invalid resource", record2.getResponse());
         assertEquals(false, record2.getValidResource());
         assertEquals(true, record2.getValidRequest());
         assertEquals(true, record2.getProcessed());

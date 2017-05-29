@@ -78,7 +78,7 @@ public class MockInboxTest extends TestCase {
                 Connection conn = ds.getConnection();
             ){
             conn.createStatement().execute("DROP TABLE IF EXISTS MESSAGES;");
-            conn.createStatement().execute("DROP TABLE IF EXISTS CUSTOMERS;");
+            conn.createStatement().execute("DROP TABLE IF EXISTS RESOURCES;");
         } catch (SQLException e) {
             e.printStackTrace();
         }

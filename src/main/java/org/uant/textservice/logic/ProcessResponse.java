@@ -11,7 +11,7 @@ import java.util.Map;
 //TODO is it valid if a customer puts "status" in subject?
 
 // if customer exists continue,
-// else return invalid customer string
+// else return invalid resource string
 //
 // if message says status continue
 // else return invalid command
@@ -37,7 +37,7 @@ public class ProcessResponse {
 
         //TODO in truth if it is in invalid resource it doesn't matter if it is
         // a valid request or not?
-        if (resourceDb.isValidCustomer(sender)) {
+        if (resourceDb.isValidResource(sender)) {
             record.setValidResource(true);
         } else {
             record.setValidResource(false);

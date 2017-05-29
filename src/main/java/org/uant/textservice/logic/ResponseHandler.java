@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 //TODO is it valid if a customer puts "status" in subject?
 
 // if customer exists continue,
-// else return invalid customer string
+// else return invalid resource string
 //
 // if message says status continue
 // else return invalid command
@@ -28,7 +28,7 @@ public class ResponseHandler {
             //TODO need some sort of exception that if generated here  gets passed up
             //the stack, and handled in the main program. The main loop would have a
             //try catch in a while/true to handle this happening at any level.
-            return resourceDb.getCustomerMessage(sender);
+            return resourceDb.getResourceMessage(sender);
         } else {
             return "invalid query";
         }

@@ -69,7 +69,7 @@ public class SendMessageTest extends TestCase {
         try (
                 Connection conn = ds.getConnection();
             ){
-            conn.createStatement().execute("DROP TABLE IF EXISTS CUSTOMERS;");
+            conn.createStatement().execute("DROP TABLE IF EXISTS RESOURCES;");
             conn.createStatement().execute("DROP TABLE IF EXISTS MESSAGES;");
         } catch (SQLException e) {
             e.printStackTrace();
