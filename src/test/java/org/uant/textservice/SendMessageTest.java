@@ -15,7 +15,9 @@ import org.uant.textservice.db.MessageDBO;
 import javax.sql.DataSource;
 import java.sql.*;
 
-import java.util.Map;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import org.uant.textservice.communication.MessageSender;
 
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -85,16 +87,18 @@ public class SendMessageTest extends TestCase {
             final String body = validQuery;
 
             ReceivedMessage msg = msgGetter.createMessage(sender, body);
-
             msgDb.insertMessage(msg);
+            //MessageDBO record = msgDb.getMessage(msg.hash);
+            //record = msgSender.sendMessage(msg.hash);
+            //msgDb.updateMessage(record);
+
+            BlockingQueue<Integer> sendMsgPipe = new LinkedBlockingQueue<Integer>();
+            MessageSender ms = new MessageSender(sendMsgPipe);
             MessageDBO record = msgDb.getMessage(msg.hash);
 
-            record = msgSender.sendMessage(msg.hash);
+            ms.sendMessage(msg.hash);
 
-
-            msgDb.updateMessage(record);
             record = msgDb.getMessage(msg.hash);
-
             assertEquals(true, record.getSent());
     }
 }

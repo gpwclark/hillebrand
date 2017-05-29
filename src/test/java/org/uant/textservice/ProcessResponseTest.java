@@ -14,6 +14,10 @@ import org.uant.textservice.db.MessageDBO;
 
 import org.uant.textservice.mockData.getDDL;
 
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import org.uant.textservice.communication.MessageProcessor;
+
 import java.sql.*;
 import javax.sql.DataSource;
 
@@ -86,25 +90,23 @@ public class ProcessResponseTest extends TestCase {
         String validQuery = "aljdslskjdlkjldsjlsaSTATUSlkajaldskj";
         String validQuery1 = "aljdslskjdlkjldsjlsastatusssslkajaldskj";
         String invalidQuery = "lakjdlksjdlksajdlanlkjwna;oiuw;nwnwwlkja;s?><M";
+        BlockingQueue<Integer> processMsgPipe = new LinkedBlockingQueue<Integer>();
+        BlockingQueue<Integer> sendMsgPipe = new LinkedBlockingQueue<Integer>();
 
-        ProcessResponse pr = new ProcessResponse(resourceDb, msgDb);
+        MessageProcessor mp = new MessageProcessor(processMsgPipe, sendMsgPipe);
 
         //valid query and resource
         final String sender = testEmailGen.getRandomTestEmail();
         final String body = validQuery;
 
         ReceivedMessage msg = msgGetter.createMessage(sender, body);
-
         msgDb.insertMessage(msg);
-        MessageDBO record = pr.processMessageResponse(msg.hash);
-        assertEquals("all orders shipped", record.getResponse());
-        assertEquals(true, record.getValidResource());
-        assertEquals(true, record.getValidRequest());
-        assertEquals(true, record.getProcessed());
-        assertEquals(false, record.getSent());
 
-        msgDb.updateMessage(record);
-        record = msgDb.getMessage(record.getHash());
+        //MessageDBO record = pr.processMessageResponse(msg.hash);
+
+        mp.processMessage(msg.hash);
+        MessageDBO record = msgDb.getMessage(msg.hash);
+
         assertEquals("all orders shipped", record.getResponse());
         assertEquals(true, record.getValidResource());
         assertEquals(true, record.getValidRequest());
@@ -116,17 +118,13 @@ public class ProcessResponseTest extends TestCase {
         final String body1 = invalidQuery;
 
         ReceivedMessage msg1 = msgGetter.createMessage(sender1, body1);
-
         msgDb.insertMessage(msg1);
-        MessageDBO record1 = pr.processMessageResponse(msg1.hash);
-        assertEquals("invalid query", record1.getResponse());
-        assertEquals(true, record1.getValidResource());
-        assertEquals(false, record1.getValidRequest());
-        assertEquals(true, record.getProcessed());
-        assertEquals(false, record.getSent());
 
-        msgDb.updateMessage(record1);
-        record1 = msgDb.getMessage(record1.getHash());
+        //MessageDBO record1 = pr.processMessageResponse(msg1.hash);
+
+        mp.processMessage(msg1.hash);
+        MessageDBO record1 = msgDb.getMessage(msg1.hash);
+
         assertEquals("invalid query", record1.getResponse());
         assertEquals(true, record1.getValidResource());
         assertEquals(false, record1.getValidRequest());
@@ -138,17 +136,11 @@ public class ProcessResponseTest extends TestCase {
         final String body2 = validQuery1;
 
         ReceivedMessage msg2 = msgGetter.createMessage(sender2, body2);
-
         msgDb.insertMessage(msg2);
-        MessageDBO record2 = pr.processMessageResponse(msg2.hash);
-        assertEquals("invalid resource", record2.getResponse());
-        assertEquals(false, record2.getValidResource());
-        assertEquals(true, record2.getValidRequest());
-        assertEquals(true, record2.getProcessed());
-        assertEquals(false, record2.getSent());
 
-        msgDb.updateMessage(record2);
-        record2 = msgDb.getMessage(record2.getHash());
+        mp.processMessage(msg2.hash);
+        MessageDBO record2 = msgDb.getMessage(msg2.hash);
+
         assertEquals("invalid resource", record2.getResponse());
         assertEquals(false, record2.getValidResource());
         assertEquals(true, record2.getValidRequest());

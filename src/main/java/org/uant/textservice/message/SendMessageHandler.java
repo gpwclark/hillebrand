@@ -8,5 +8,5 @@ import org.uant.textservice.db.MessageDBO;
  */
 
 public interface SendMessageHandler {
-    MessageDBO sendMessage(int key);
+    MessageDBO sendMessage(MessageDBO message);
 }

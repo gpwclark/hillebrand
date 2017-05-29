@@ -17,9 +17,7 @@ public class MockMessageSender implements SendMessageHandler {
         this.msgDb = msgDb;
     }
 
-    public MessageDBO sendMessage(int key) {
-        MessageDBO record = msgDb.getMessage(key);
-        record.setSent(true);
-        return record;
+    public MessageDBO sendMessage(MessageDBO message) {
+        return message;
     }
 }
