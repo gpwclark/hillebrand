@@ -3,8 +3,8 @@ package org.pcweavers.textservice;
 import org.uant.textservice.message.ReceivedMessage;
 import org.uant.textservice.message.ReceivedMessageHandler;
 import org.uant.textservice.message.MockMessageGenerator;
-import org.uant.textservice.db.InboxHandler;
-import org.uant.textservice.db.MockInbox;
+import org.uant.textservice.db.MessageDriver;
+import org.uant.textservice.db.MessageDb;
 import org.uant.textservice.db.TestEmailGenerator;
 import org.uant.textservice.message.SendMessageHandler;
 import org.uant.textservice.message.MockMessageSender;
@@ -33,7 +33,7 @@ import org.junit.Test;
 
 public class SendMessageTest extends TestCase {
     private SendMessageHandler msgSender;
-    private InboxHandler inbox;
+    private MessageDriver msgDb;
     private ReceivedMessageHandler msgGetter;
     private TestEmailGenerator testEmailGen;
 
@@ -59,8 +59,8 @@ public class SendMessageTest extends TestCase {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        inbox = new MockInbox(ds);
-        msgSender = new MockMessageSender(inbox);
+        msgDb = new MessageDb(ds);
+        msgSender = new MockMessageSender(msgDb);
     }
 
     @After
@@ -86,14 +86,14 @@ public class SendMessageTest extends TestCase {
 
             ReceivedMessage msg = msgGetter.createMessage(sender, body);
 
-            inbox.insertMessage(msg);
-            MessageDBO record = inbox.getMessage(msg.hash);
+            msgDb.insertMessage(msg);
+            MessageDBO record = msgDb.getMessage(msg.hash);
 
             record = msgSender.sendMessage(msg.hash);
 
 
-            inbox.updateMessage(record);
-            record = inbox.getMessage(msg.hash);
+            msgDb.updateMessage(record);
+            record = msgDb.getMessage(msg.hash);
 
             assertEquals(true, record.getSent());
     }

@@ -1,7 +1,8 @@
 package org.uant.textservice.logic;
 
+import org.uant.textservice.db.ResourceDriver;
 import org.uant.textservice.db.ResourceDb;
-import org.uant.textservice.db.InboxHandler;
+import org.uant.textservice.db.MessageDriver;
 import org.uant.textservice.db.MessageDBO;
 
 import org.uant.textservice.logic.ResponseHandler;
@@ -18,11 +19,11 @@ import java.util.Map;
 //
 // else get resource data from db and put in response
 public class ProcessResponse {
-    ResourceDb resourceDb;
-    InboxHandler msgDb;
+    ResourceDriver resourceDb;
+    MessageDriver msgDb;
     ResponseHandler rh;
 
-    public ProcessResponse(ResourceDb resourceDb, InboxHandler msgDb) {
+    public ProcessResponse(ResourceDriver resourceDb, MessageDriver msgDb) {
         this.resourceDb = resourceDb;
         this.msgDb = msgDb;
         rh = new ResponseHandler(resourceDb);

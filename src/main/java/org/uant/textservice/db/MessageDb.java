@@ -1,7 +1,7 @@
 package org.uant.textservice.db;
 
 import org.uant.textservice.message.ReceivedMessage;
-import org.uant.textservice.db.InboxHandler;
+import org.uant.textservice.db.MessageDriver;
 import org.uant.textservice.db.MessageDBO;
 
 import javax.sql.DataSource;
@@ -14,11 +14,10 @@ import java.util.HashMap;
  *
  */
 
-public class MockInbox implements InboxHandler {
-    Map<Integer, Map> db = new HashMap<Integer, Map>();
+public class MessageDb implements MessageDriver {
     DataSource ds;
 
-    public MockInbox(DataSource ds) {
+    public MessageDb(DataSource ds) {
         this.ds = ds;
     }
 

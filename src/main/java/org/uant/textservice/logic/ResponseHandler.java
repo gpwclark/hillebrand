@@ -1,5 +1,6 @@
 package org.uant.textservice.logic;
 
+import org.uant.textservice.db.ResourceDriver;
 import org.uant.textservice.db.ResourceDb;
 import java.util.regex.Pattern;
 
@@ -13,8 +14,8 @@ import java.util.regex.Pattern;
 //
 // else get resource data from db and put in response
 public class ResponseHandler {
-    ResourceDb resourceDb;
-    public ResponseHandler(ResourceDb resourceDb) {
+    ResourceDriver resourceDb;
+    public ResponseHandler(ResourceDriver resourceDb) {
         this.resourceDb = resourceDb;
     }
 

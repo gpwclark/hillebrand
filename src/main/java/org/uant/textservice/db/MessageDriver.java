@@ -8,7 +8,7 @@ import java.util.Map;
  *
  */
 
-public interface InboxHandler {
+public interface MessageDriver {
     void insertMessage(ReceivedMessage msg);
     void insertMessage(MessageDBO msgDBO);
     void updateMessage(MessageDBO msgDBO);

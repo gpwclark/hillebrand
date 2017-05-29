@@ -2,7 +2,7 @@ package org.uant.textservice.message;
 
 import org.uant.textservice.message.ReceivedMessage;
 import org.uant.textservice.message.SendMessageHandler;
-import org.uant.textservice.db.InboxHandler;
+import org.uant.textservice.db.MessageDriver;
 import org.uant.textservice.db.MessageDBO;
 import java.util.Map;
 
@@ -11,9 +11,9 @@ import java.util.Map;
  */
 
 public class MockMessageSender implements SendMessageHandler {
-    InboxHandler msgDb;
+    MessageDriver msgDb;
 
-    public MockMessageSender(InboxHandler msgDb) {
+    public MockMessageSender(MessageDriver msgDb) {
         this.msgDb = msgDb;
     }
 

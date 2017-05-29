@@ -8,7 +8,7 @@ import java.sql.*;
 import org.uant.textservice.db.TestEmailGenerator;
 
 
-public final class ResourceDb {
+public final class ResourceDb implements ResourceDriver{
     DataSource ds;
 
     public ResourceDb(DataSource ds){
@@ -38,7 +38,6 @@ public final class ResourceDb {
     public String getResourceMessage(String resourceHandle) {
         boolean isValid = isValidResource(resourceHandle);
         if (isValid)
-            //TODO actual DB lookup...
             return "all orders shipped";
         else
             return "invalid resource";

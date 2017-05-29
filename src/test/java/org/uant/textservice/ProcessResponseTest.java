@@ -3,9 +3,10 @@ package org.pcweavers.textservice;
 import org.uant.textservice.message.ReceivedMessage;
 import org.uant.textservice.message.ReceivedMessageHandler;
 import org.uant.textservice.message.MockMessageGenerator;
+import org.uant.textservice.db.ResourceDriver;
 import org.uant.textservice.db.ResourceDb;
-import org.uant.textservice.db.InboxHandler;
-import org.uant.textservice.db.MockInbox;
+import org.uant.textservice.db.MessageDriver;
+import org.uant.textservice.db.MessageDb;
 import org.uant.textservice.db.TestEmailGenerator;
 import org.uant.textservice.logic.ProcessResponse;
 import org.uant.textservice.db.DataSourceFactory;
@@ -34,8 +35,8 @@ import org.junit.Test;
 
 public class ProcessResponseTest extends TestCase {
     private ReceivedMessageHandler msgGetter;
-    private InboxHandler inbox;
-    private ResourceDb resourceDb;
+    private MessageDriver msgDb;
+    private ResourceDriver resourceDb;
     private TestEmailGenerator testEmailGen;
     private Connection conn;
 
@@ -64,7 +65,7 @@ public class ProcessResponseTest extends TestCase {
             e.printStackTrace();
         }
         resourceDb = new ResourceDb(ds);
-        inbox = new MockInbox(ds);
+        msgDb = new MessageDb(ds);
     }
 
     @After
@@ -86,7 +87,7 @@ public class ProcessResponseTest extends TestCase {
         String validQuery1 = "aljdslskjdlkjldsjlsastatusssslkajaldskj";
         String invalidQuery = "lakjdlksjdlksajdlanlkjwna;oiuw;nwnwwlkja;s?><M";
 
-        ProcessResponse pr = new ProcessResponse(resourceDb, inbox);
+        ProcessResponse pr = new ProcessResponse(resourceDb, msgDb);
 
         //valid query and resource
         final String sender = testEmailGen.getRandomTestEmail();
@@ -94,7 +95,7 @@ public class ProcessResponseTest extends TestCase {
 
         ReceivedMessage msg = msgGetter.createMessage(sender, body);
 
-        inbox.insertMessage(msg);
+        msgDb.insertMessage(msg);
         MessageDBO record = pr.processMessageResponse(msg.hash);
         assertEquals("all orders shipped", record.getResponse());
         assertEquals(true, record.getValidResource());
@@ -102,8 +103,8 @@ public class ProcessResponseTest extends TestCase {
         assertEquals(true, record.getProcessed());
         assertEquals(false, record.getSent());
 
-        inbox.updateMessage(record);
-        record = inbox.getMessage(record.getHash());
+        msgDb.updateMessage(record);
+        record = msgDb.getMessage(record.getHash());
         assertEquals("all orders shipped", record.getResponse());
         assertEquals(true, record.getValidResource());
         assertEquals(true, record.getValidRequest());
@@ -116,7 +117,7 @@ public class ProcessResponseTest extends TestCase {
 
         ReceivedMessage msg1 = msgGetter.createMessage(sender1, body1);
 
-        inbox.insertMessage(msg1);
+        msgDb.insertMessage(msg1);
         MessageDBO record1 = pr.processMessageResponse(msg1.hash);
         assertEquals("invalid query", record1.getResponse());
         assertEquals(true, record1.getValidResource());
@@ -124,8 +125,8 @@ public class ProcessResponseTest extends TestCase {
         assertEquals(true, record.getProcessed());
         assertEquals(false, record.getSent());
 
-        inbox.updateMessage(record1);
-        record1 = inbox.getMessage(record1.getHash());
+        msgDb.updateMessage(record1);
+        record1 = msgDb.getMessage(record1.getHash());
         assertEquals("invalid query", record1.getResponse());
         assertEquals(true, record1.getValidResource());
         assertEquals(false, record1.getValidRequest());
@@ -138,7 +139,7 @@ public class ProcessResponseTest extends TestCase {
 
         ReceivedMessage msg2 = msgGetter.createMessage(sender2, body2);
 
-        inbox.insertMessage(msg2);
+        msgDb.insertMessage(msg2);
         MessageDBO record2 = pr.processMessageResponse(msg2.hash);
         assertEquals("invalid resource", record2.getResponse());
         assertEquals(false, record2.getValidResource());
@@ -146,8 +147,8 @@ public class ProcessResponseTest extends TestCase {
         assertEquals(true, record2.getProcessed());
         assertEquals(false, record2.getSent());
 
-        inbox.updateMessage(record2);
-        record2 = inbox.getMessage(record2.getHash());
+        msgDb.updateMessage(record2);
+        record2 = msgDb.getMessage(record2.getHash());
         assertEquals("invalid resource", record2.getResponse());
         assertEquals(false, record2.getValidResource());
         assertEquals(true, record2.getValidRequest());
