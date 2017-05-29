@@ -2,6 +2,7 @@ package org.uant.textservice.logic;
 
 import org.uant.textservice.db.ResourceDb;
 import org.uant.textservice.db.InboxHandler;
+import org.uant.textservice.db.MessageDBO;
 
 import org.uant.textservice.logic.ResponseHandler;
 import java.util.regex.Pattern;
@@ -28,28 +29,27 @@ public class ProcessResponse {
     }
 
 
-    public Map<String, String> processMessageResponse(int key) {
-        Map<String, String> record = msgDb.getMessage(key);
-        String sender = record.get("sender");
-        String body = record.get("body");
+    public MessageDBO processMessageResponse(int key) {
+        MessageDBO record = msgDb.getMessage(key);
+        String sender = record.getSender();
+        String body = record.getBody();
         String response = rh.getResponse(sender, body);
 
         //TODO in truth if it is in invalid resource it doesn't matter if it is
         // a valid request or not?
         if (resourceDb.isValidCustomer(sender)) {
-            record.put("validResource", "true");
+            record.setValidResource(true);
         } else {
-            record.put("validResource", "false");
+            record.setValidResource(false);
         }
 
         if (rh.isValidRequest(body)) {
-            record.put("validRequest", "true");
+            record.setValidRequest(true);
         } else {
-            record.put("validRequest", "false");
+            record.setValidRequest(false);
         }
 
-
-        record.put("response", response);
+        record.setResponse(response);
 
         return record;
     }

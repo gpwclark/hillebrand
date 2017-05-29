@@ -8,6 +8,12 @@ import org.uant.textservice.db.MockInbox;
 import org.uant.textservice.db.TestEmailGenerator;
 import org.uant.textservice.message.SendMessageHandler;
 import org.uant.textservice.message.MockMessageSender;
+import org.uant.textservice.db.DataSourceFactory;
+import org.uant.textservice.mockData.getDDL;
+import org.uant.textservice.db.MessageDBO;
+
+import javax.sql.DataSource;
+import java.sql.*;
 
 import java.util.Map;
 
@@ -42,10 +48,19 @@ public class SendMessageTest extends TestCase {
 
     @Before
     public void setUp() {
-        inbox = new MockInbox();
         msgSender = new MockMessageSender(inbox);
         testEmailGen = new TestEmailGenerator();
         msgGetter = new MockMessageGenerator();
+        DataSource ds = DataSourceFactory.getMySQLDataSource();
+        try (
+                Connection conn = ds.getConnection();
+            ){
+            String messages = getDDL.get("test_ddls/data_in_test.ddl");
+            conn.createStatement().executeUpdate(messages);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        inbox = new MockInbox(ds);
     }
 
     @After
@@ -63,12 +78,12 @@ public class SendMessageTest extends TestCase {
 
             ReceivedMessage msg = msgGetter.createMessage(sender, body);
 
-            inbox.storeMessage(msg);
-            Map<String, String>  record = sm.sendMessage(msg.hash);
-            inbox.storeMessage(msg.hash, record);
+            inbox.insertMessage(msg);
+            MessageDBO record = sm.sendMessage(msg.hash);
+            inbox.insertMessage(record);
             record = inbox.getMessage(msg.hash);
 
 
-            assertEquals("true", record.get("sent"));
+            assertEquals("true", record.getSent());
     }
 }

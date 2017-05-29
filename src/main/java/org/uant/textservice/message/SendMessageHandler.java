@@ -1,11 +1,12 @@
 package org.uant.textservice.message;
 
 import java.util.Map;
+import org.uant.textservice.db.MessageDBO;
 
 /*
  *
  */
 
 public interface SendMessageHandler {
-    Map<String, String> sendMessage(int key);
+    MessageDBO sendMessage(int key);
 }

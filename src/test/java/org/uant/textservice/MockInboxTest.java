@@ -6,9 +6,11 @@ import org.uant.textservice.message.ReceivedMessage;
 import org.uant.textservice.message.ReceivedMessageHandler;
 import org.uant.textservice.message.MockMessageGenerator;
 import org.uant.textservice.db.TestEmailGenerator;
+import org.uant.textservice.db.DataSourceFactory;
 import java.util.UUID;
 
-import java.util.Map;
+import java.sql.*;
+import javax.sql.DataSource;
 
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -22,6 +24,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.Properties;
+import org.uant.textservice.mockData.getDDL;
+import org.uant.textservice.db.MessageDBO;
 
 import org.junit.After;
 import org.junit.Before;
@@ -53,9 +57,18 @@ public class MockInboxTest extends TestCase {
 
     @Before
     public void setUp() {
-        inbox = new MockInbox();
         msgGetter = new MockMessageGenerator();
         testEmailGen = new TestEmailGenerator();
+        DataSource ds = DataSourceFactory.getMySQLDataSource();
+        try (
+                Connection conn = ds.getConnection();
+            ){
+            String messages = getDDL.get("test_ddls/data_in_test.ddl");
+            conn.createStatement().executeUpdate(messages);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        inbox = new MockInbox(ds);
     }
 
     @After
@@ -70,15 +83,17 @@ public class MockInboxTest extends TestCase {
 
         ReceivedMessage msg = msgGetter.createMessage(sender, body);
 
-        inbox.storeMessage(msg);
-        Map record = inbox.getMessage(msg.hash);
+        inbox.insertMessage(msg);
+        MessageDBO record = inbox.getMessage(msg.hash);
 
-        assertEquals(msg.sender, record.get("sender"));
-        assertEquals(msg.body, record.get("body"));
-        assertEquals("unknown", record.get("validResource"));
-        assertEquals("unknown", record.get("validRequest"));
-        assertEquals("false", record.get("sent"));
-        assertEquals(Long.toString(msg.timestamp), record.get("timestamp"));
+        assertEquals(msg.sender, record.getSender());
+        assertEquals(msg.body, record.getBody());
+        assertEquals(msg.hash, record.getHash());
+        assertEquals(null, record.getResponse());
+        assertEquals(false, record.getValidResource());
+        assertEquals(false, record.getValidRequest());
+        assertEquals(false, record.getSent());
+        assertEquals(false, record.getProcessed());
+        assertEquals(msg.timestamp, record.getTimestamp());
     }
-
 }

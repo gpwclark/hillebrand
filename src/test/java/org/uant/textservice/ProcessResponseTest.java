@@ -9,6 +9,7 @@ import org.uant.textservice.db.MockInbox;
 import org.uant.textservice.db.TestEmailGenerator;
 import org.uant.textservice.logic.ProcessResponse;
 import org.uant.textservice.db.DataSourceFactory;
+import org.uant.textservice.db.MessageDBO;
 
 import org.uant.textservice.mockData.getDDL;
 
@@ -49,30 +50,21 @@ public class ProcessResponseTest extends TestCase {
 
     @Before
     public void setUp() {
-        inbox = new MockInbox();
         msgGetter = new MockMessageGenerator();
         testEmailGen = new TestEmailGenerator();
-        //DataSource ds = JdbcConnectionPool.create("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1", "user", "password");
-        //Connection conn = ds.getConnection();
-        //conn.createStatement().executeUpdate();
-        //conn = null;
-        //try {
-        //    Class.forName("org.h2.Driver");
-        //    conn = DriverManager.getConnection("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1", "user", "password");
-        //    resourceDb = new ResourceDb(conn);
-        //} catch (Exception ex) {
-        //    ex.printStackTrace();
-        //}
         DataSource ds = DataSourceFactory.getMySQLDataSource();
         try (
                 Connection conn = ds.getConnection();
             ){
-            String customers = getDDL.get("customer.ddl");
+            String customers = getDDL.get("test_ddls/customer.ddl");
+            String messages = getDDL.get("test_ddls/data_in_test.ddl");
             conn.createStatement().executeUpdate(customers);
+            conn.createStatement().executeUpdate(messages);
         } catch (SQLException e) {
             e.printStackTrace();
         }
         resourceDb = new ResourceDb(ds);
+        inbox = new MockInbox(ds);
     }
 
     @After
@@ -80,8 +72,6 @@ public class ProcessResponseTest extends TestCase {
 
     @Test
     public void testProcessResponse() {
-        //TODO need some assertions for method getCustomerMessage();
-        //    this will require getting the data.TestEmails class.
         String validQuery = "aljdslskjdlkjldsjlsaSTATUSlkajaldskj";
         String validQuery1 = "aljdslskjdlkjldsjlsastatusssslkajaldskj";
         String invalidQuery = "lakjdlksjdlksajdlanlkjwna;oiuw;nwnwwlkja;s?><M";
@@ -94,19 +84,19 @@ public class ProcessResponseTest extends TestCase {
 
         ReceivedMessage msg = msgGetter.createMessage(sender, body);
 
-        inbox.storeMessage(msg);
-        Map<String, String> record = pr.processMessageResponse(msg.hash);
+        inbox.insertMessage(msg);
+        MessageDBO record = pr.processMessageResponse(msg.hash);
 
-        assertEquals("all orders shipped", record.get("response"));
-        assertEquals("true", record.get("validResource"));
-        assertEquals("true", record.get("validRequest"));
+        assertEquals("all orders shipped", record.getResponse());
+        assertEquals("true", record.getValidResource());
+        assertEquals("true", record.getValidRequest());
 
-        inbox.storeMessage(msg.hash, record);
+        inbox.insertMessage(record);
 
         record = inbox.getMessage(msg.hash);
-        assertEquals("all orders shipped", record.get("response"));
-        assertEquals("true", record.get("validResource"));
-        assertEquals("true", record.get("validRequest"));
+        assertEquals("all orders shipped", record.getResponse());
+        assertEquals("true", record.getValidResource());
+        assertEquals("true", record.getValidRequest());
 
         //invalid query and valid customer
         final String sender1 = testEmailGen.getRandomTestEmail();
@@ -114,33 +104,33 @@ public class ProcessResponseTest extends TestCase {
 
         ReceivedMessage msg1 = msgGetter.createMessage(sender1, body1);
 
-        inbox.storeMessage(msg1);
-        Map<String, String> record1 = pr.processMessageResponse(msg1.hash);
+        inbox.insertMessage(msg1);
+        MessageDBO record1 = pr.processMessageResponse(msg1.hash);
 
-        assertEquals("invalid query", record1.get("response"));
-        assertEquals("true", record1.get("validResource"));
-        assertEquals("false", record1.get("validRequest"));
+        assertEquals("invalid query", record1.getResponse());
+        assertEquals("true", record1.getValidResource());
+        assertEquals("false", record1.getValidRequest());
 
-        inbox.storeMessage(msg1.hash, record1);
+        inbox.insertMessage(record1);
 
         record1 = inbox.getMessage(msg1.hash);
-        assertEquals("invalid query", record1.get("response"));
-        assertEquals("true", record1.get("validResource"));
-        assertEquals("false", record1.get("validRequest"));
+        assertEquals("invalid query", record1.getResponse());
+        assertEquals("true", record1.getValidResource());
+        assertEquals("false", record1.getValidRequest());
         //valid query and invalid customer
         final String sender2 = "invalid@email.com";
         final String body2 = validQuery1;
 
         ReceivedMessage msg2 = msgGetter.createMessage(sender2, body2);
 
-        inbox.storeMessage(msg2);
-        Map<String, String> record2 = pr.processMessageResponse(msg2.hash);
+        inbox.insertMessage(msg2);
+        MessageDBO record2 = pr.processMessageResponse(msg2.hash);
 
-        assertEquals("invalid customer", record2.get("response"));
+        assertEquals("invalid customer", record2.getResponse());
 
-        inbox.storeMessage(msg2.hash, record2);
+        inbox.insertMessage(record2);
 
         record2 = inbox.getMessage(msg2.hash);
-        assertEquals("invalid customer", record2.get("response"));
+        assertEquals("invalid customer", record2.getResponse());
     }
 }
