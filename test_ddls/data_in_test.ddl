@@ -5,7 +5,7 @@ CREATE TABLE messages(
         body VARCHAR(1600) NOT NULL,
         response VARCHAR(1600),
         validResource BIT,
-        validResponse BIT,
+        validRequest BIT,
         sent BIT,
         processed BIT,
         timestamp BIGINT NOT NULL,
@@ -13,7 +13,7 @@ CREATE TABLE messages(
 );
 
 INSERT INTO messages
-    (`hash`, `sender`, `body`, `response`, `validResource`, `validResponse`, `sent`, `processed`, `timestamp`)
+    (`hash`, `sender`, `body`, `response`, `validResource`, `validRequest`, `sent`, `processed`, `timestamp`)
 VALUES
     (987989, 'customer5@localhost.com', 'laksjdlsjSTATUS', NULL, 0, 0, 0, 0, 1496013221194),
     (91208202, 'customer139@localhost.com', 'lkajsdlajsdl jfasldkfj ldakj ldskjflakjds lajdflaskjd flsdk jflk sl', NULL, 0, 0, 0, 0, 1496013221198),

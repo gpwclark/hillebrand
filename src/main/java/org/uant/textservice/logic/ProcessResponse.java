@@ -50,6 +50,7 @@ public class ProcessResponse {
         }
 
         record.setResponse(response);
+        record.setProcessed(true);
 
         return record;
     }

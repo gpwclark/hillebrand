@@ -28,10 +28,10 @@ public class MockInbox implements InboxHandler {
     }
 
     public void insertMessage(MessageDBO msgDBO){
-        String insert = "INSERT INTO messages"
-        + "(hash, sender, body, response, validResource, validRequest, sent, processed, timestamp)"
-        + "VALUES"
-        + "?, ?, ?, ?, ?, ?, ?, ?, ?";
+        String insert = "INSERT INTO messages "
+        + " (hash, sender, body, response, validResource, validRequest, sent, processed, timestamp)"
+        + " VALUES"
+        + " (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (
                 Connection conn = ds.getConnection();
@@ -46,7 +46,7 @@ public class MockInbox implements InboxHandler {
             statement.setBoolean(7, msgDBO.getSent());
             statement.setBoolean(8, msgDBO.getProcessed());
             statement.setLong(9, msgDBO.getTimestamp());
-            statement.executeUpdate();
+            statement.execute();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -55,29 +55,29 @@ public class MockInbox implements InboxHandler {
     public void updateMessage(MessageDBO msgDBO){
         try (
                 Connection conn = ds.getConnection();
-                PreparedStatement statement = conn.prepareStatement("SELECT * FROM messages WHERE hash=?");
+                PreparedStatement statement = conn.prepareStatement("SELECT * FROM messages WHERE hash=?", ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE);
             ) {
             statement.setInt(1, msgDBO.getHash());
 
             try (ResultSet rs = statement.executeQuery()) {
                 if (rs.next()) {
-                    // this should always match the getMessage with a different signature;
-                    rs.updateInt("hash", msgDBO.getHash());
-                    rs.updateString("sender" ,msgDBO.getSender());
-                    rs.updateString("body", msgDBO.getBody());
+                    //rs.updateInt("hash", msgDBO.getHash());
+                    //rs.updateString("sender" ,msgDBO.getSender());
+                    //rs.updateString("body", msgDBO.getBody());
                     rs.updateString("response", msgDBO.getResponse());
                     rs.updateBoolean("validResource", msgDBO.getValidResource());
                     rs.updateBoolean("validRequest", msgDBO.getValidRequest());
                     rs.updateBoolean("sent", msgDBO.getSent());
                     rs.updateBoolean("processed", msgDBO.getProcessed());
-                    rs.updateLong("timestamp", msgDBO.getTimestamp());
-                    statement.executeUpdate();
+                    //rs.updateLong("timestamp", msgDBO.getTimestamp());
+                    rs.updateRow();
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
+
     public MessageDBO getMessage(int hash){
         MessageDBO msgDBO = new MessageDBO();
         try (
@@ -88,7 +88,6 @@ public class MockInbox implements InboxHandler {
 
             try (ResultSet rs = statement.executeQuery()) {
                 if (rs.next()) {
-                    // this should always match the getMessage with a different signature;
                     msgDBO.setHash(rs.getInt("hash"));
                     msgDBO.setSender(rs.getString("sender"));
                     msgDBO.setBody(rs.getString("body"));
@@ -98,6 +97,7 @@ public class MockInbox implements InboxHandler {
                     msgDBO.setSent(rs.getBoolean("sent"));
                     msgDBO.setProcessed(rs.getBoolean("processed"));
                     msgDBO.setTimestamp(rs.getLong("timestamp"));
+                    statement.execute();
                 }
             }
         } catch (SQLException e) {
@@ -105,6 +105,7 @@ public class MockInbox implements InboxHandler {
         }
         return msgDBO;
     }
+
     public MessageDBO getMessage(long id){
         MessageDBO msgDBO = new MessageDBO();
         try (
@@ -125,6 +126,7 @@ public class MockInbox implements InboxHandler {
                     msgDBO.setSent(rs.getBoolean("sent"));
                     msgDBO.setProcessed(rs.getBoolean("processed"));
                     msgDBO.setTimestamp(rs.getLong("timestamp"));
+                    statement.execute();
                 }
             }
         } catch (SQLException e) {

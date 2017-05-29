@@ -68,7 +68,17 @@ public class ProcessResponseTest extends TestCase {
     }
 
     @After
-    public void tearDown() {}
+    public void tearDown() {
+        DataSource ds = DataSourceFactory.getMySQLDataSource();
+        try (
+                Connection conn = ds.getConnection();
+            ){
+            conn.createStatement().execute("DROP TABLE IF EXISTS MESSAGES;");
+            conn.createStatement().execute("DROP TABLE IF EXISTS CUSTOMERS;");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Test
     public void testProcessResponse() {
@@ -86,17 +96,19 @@ public class ProcessResponseTest extends TestCase {
 
         inbox.insertMessage(msg);
         MessageDBO record = pr.processMessageResponse(msg.hash);
-
         assertEquals("all orders shipped", record.getResponse());
-        assertEquals("true", record.getValidResource());
-        assertEquals("true", record.getValidRequest());
+        assertEquals(true, record.getValidResource());
+        assertEquals(true, record.getValidRequest());
+        assertEquals(true, record.getProcessed());
+        assertEquals(false, record.getSent());
 
-        inbox.insertMessage(record);
-
-        record = inbox.getMessage(msg.hash);
+        inbox.updateMessage(record);
+        record = inbox.getMessage(record.getHash());
         assertEquals("all orders shipped", record.getResponse());
-        assertEquals("true", record.getValidResource());
-        assertEquals("true", record.getValidRequest());
+        assertEquals(true, record.getValidResource());
+        assertEquals(true, record.getValidRequest());
+        assertEquals(true, record.getProcessed());
+        assertEquals(false, record.getSent());
 
         //invalid query and valid customer
         final String sender1 = testEmailGen.getRandomTestEmail();
@@ -106,17 +118,20 @@ public class ProcessResponseTest extends TestCase {
 
         inbox.insertMessage(msg1);
         MessageDBO record1 = pr.processMessageResponse(msg1.hash);
-
         assertEquals("invalid query", record1.getResponse());
-        assertEquals("true", record1.getValidResource());
-        assertEquals("false", record1.getValidRequest());
+        assertEquals(true, record1.getValidResource());
+        assertEquals(false, record1.getValidRequest());
+        assertEquals(true, record.getProcessed());
+        assertEquals(false, record.getSent());
 
-        inbox.insertMessage(record1);
-
-        record1 = inbox.getMessage(msg1.hash);
+        inbox.updateMessage(record1);
+        record1 = inbox.getMessage(record1.getHash());
         assertEquals("invalid query", record1.getResponse());
-        assertEquals("true", record1.getValidResource());
-        assertEquals("false", record1.getValidRequest());
+        assertEquals(true, record1.getValidResource());
+        assertEquals(false, record1.getValidRequest());
+        assertEquals(true, record.getProcessed());
+        assertEquals(false, record.getSent());
+
         //valid query and invalid customer
         final String sender2 = "invalid@email.com";
         final String body2 = validQuery1;
@@ -125,12 +140,18 @@ public class ProcessResponseTest extends TestCase {
 
         inbox.insertMessage(msg2);
         MessageDBO record2 = pr.processMessageResponse(msg2.hash);
-
         assertEquals("invalid customer", record2.getResponse());
+        assertEquals(false, record2.getValidResource());
+        assertEquals(true, record2.getValidRequest());
+        assertEquals(true, record2.getProcessed());
+        assertEquals(false, record2.getSent());
 
-        inbox.insertMessage(record2);
-
-        record2 = inbox.getMessage(msg2.hash);
+        inbox.updateMessage(record2);
+        record2 = inbox.getMessage(record2.getHash());
         assertEquals("invalid customer", record2.getResponse());
+        assertEquals(false, record2.getValidResource());
+        assertEquals(true, record2.getValidRequest());
+        assertEquals(true, record2.getProcessed());
+        assertEquals(false, record2.getSent());
     }
 }

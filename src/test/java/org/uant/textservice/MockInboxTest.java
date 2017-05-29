@@ -73,6 +73,15 @@ public class MockInboxTest extends TestCase {
 
     @After
     public void tearDown() {
+        DataSource ds = DataSourceFactory.getMySQLDataSource();
+        try (
+                Connection conn = ds.getConnection();
+            ){
+            conn.createStatement().execute("DROP TABLE IF EXISTS MESSAGES;");
+            conn.createStatement().execute("DROP TABLE IF EXISTS CUSTOMERS;");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @Test

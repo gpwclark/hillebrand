@@ -25,6 +25,18 @@ public class MessageDBO {
         this.timestamp = timestamp;
     }
 
+    public void print() {
+        System.out.println("hash: " +  Integer.toString(getHash()));
+        System.out.println("sender: " +  getSender());
+        System.out.println("body: " +  getBody());
+        System.out.println("response: " + getResponse());
+        System.out.println("validResource: " + Boolean.toString(getValidResource()));
+        System.out.println("validRequest: " + Boolean.toString(getValidRequest()));
+        System.out.println("sent: " + Boolean.toString(getSent()));
+        System.out.println("processed: " + Boolean.toString(getProcessed()));
+        System.out.println("timestamp: " + Long.toString(getTimestamp()));
+    }
+
     public int getHash() {
         return this.hash;
     }

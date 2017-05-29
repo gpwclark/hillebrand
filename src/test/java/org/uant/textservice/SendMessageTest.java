@@ -48,7 +48,6 @@ public class SendMessageTest extends TestCase {
 
     @Before
     public void setUp() {
-        msgSender = new MockMessageSender(inbox);
         testEmailGen = new TestEmailGenerator();
         msgGetter = new MockMessageGenerator();
         DataSource ds = DataSourceFactory.getMySQLDataSource();
@@ -61,15 +60,24 @@ public class SendMessageTest extends TestCase {
             e.printStackTrace();
         }
         inbox = new MockInbox(ds);
+        msgSender = new MockMessageSender(inbox);
     }
 
     @After
     public void tearDown() {
+        DataSource ds = DataSourceFactory.getMySQLDataSource();
+        try (
+                Connection conn = ds.getConnection();
+            ){
+            conn.createStatement().execute("DROP TABLE IF EXISTS CUSTOMERS;");
+            conn.createStatement().execute("DROP TABLE IF EXISTS MESSAGES;");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
-    public void testProcessResponse() {
-        SendMessageHandler sm = new MockMessageSender(inbox);
+    public void testSendMessage() {
         String validQuery = "aljdslskjdlkjldsjlsaSTATUSlkajaldskj";
 
         //valid query and customer
@@ -79,11 +87,14 @@ public class SendMessageTest extends TestCase {
             ReceivedMessage msg = msgGetter.createMessage(sender, body);
 
             inbox.insertMessage(msg);
-            MessageDBO record = sm.sendMessage(msg.hash);
-            inbox.insertMessage(record);
+            MessageDBO record = inbox.getMessage(msg.hash);
+
+            record = msgSender.sendMessage(msg.hash);
+
+
+            inbox.updateMessage(record);
             record = inbox.getMessage(msg.hash);
 
-
-            assertEquals("true", record.getSent());
+            assertEquals(true, record.getSent());
     }
 }
