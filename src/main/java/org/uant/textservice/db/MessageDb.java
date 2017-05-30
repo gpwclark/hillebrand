@@ -7,8 +7,7 @@ import org.uant.textservice.db.MessageDBO;
 import javax.sql.DataSource;
 import java.sql.*;
 
-import java.util.Map;
-import java.util.HashMap;
+import java.util.ArrayList;
 
 /*
  *
@@ -132,5 +131,54 @@ public class MessageDb implements MessageDriver {
             e.printStackTrace();
         }
         return msgDBO;
+    }
+
+    //ONLY USE IN TESTING!
+    public ArrayList<MessageDBO> getTable(){
+        ArrayList<MessageDBO> messages = new ArrayList<MessageDBO>();
+        try (
+                Connection conn = ds.getConnection();
+                PreparedStatement statement = conn.prepareStatement("SELECT * FROM messages");
+            ) {
+
+            try (ResultSet rs = statement.executeQuery()) {
+                while (rs.next()) {
+                    // this should always match the getMessage with a different signature;
+                    MessageDBO msgDBO = new MessageDBO();
+                    msgDBO.setHash(rs.getInt("hash"));
+                    msgDBO.setSender(rs.getString("sender"));
+                    msgDBO.setBody(rs.getString("body"));
+                    msgDBO.setResponse(rs.getString("response"));
+                    msgDBO.setValidResource(rs.getBoolean("validResource"));
+                    msgDBO.setValidRequest(rs.getBoolean("validRequest"));
+                    msgDBO.setSent(rs.getBoolean("sent"));
+                    msgDBO.setProcessed(rs.getBoolean("processed"));
+                    msgDBO.setTimestamp(rs.getLong("timestamp"));
+                    messages.add(msgDBO);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return messages;
+    }
+
+    public void deleteMessagesOlderThan(long someTimeAgo){
+        MessageDBO msgDBO = new MessageDBO();
+        try (
+                Connection conn = ds.getConnection();
+                PreparedStatement statement = conn.prepareStatement("DELETE FROM messages WHERE timestamp < ? AND processed=TRUE");
+            ) {
+            statement.setLong(1, someTimeAgo);
+            statement.execute();
+
+            //try (ResultSet rs = statement.executeQuery()) {
+            //    if (rs.next()) {
+            //        statement.execute();
+            //    }
+            //}
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

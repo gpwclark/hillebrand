@@ -35,7 +35,8 @@ public class MessageReceiver  {
                 ReceivedMessage newMsg;
                 while (true) {
                     //TODO would we ever want to break out of here?
-
+                    // poison pill?
+                    // http://web.mit.edu/6.005/www/fa14/classes/20-queues-locks/message-passing/
                     try {
                         newMsg = newMsgPipe.take();
 
