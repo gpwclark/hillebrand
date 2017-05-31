@@ -1,4 +1,4 @@
-package org.uant.textservice.db;
+package org.uant.textservice.data;
 
 import java.util.ArrayList;
 import java.util.Random;

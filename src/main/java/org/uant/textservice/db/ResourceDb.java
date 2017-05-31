@@ -5,9 +5,6 @@ import java.util.Set;
 import javax.sql.DataSource;
 import java.sql.*;
 
-import org.uant.textservice.db.TestEmailGenerator;
-
-
 public final class ResourceDb implements ResourceDriver{
     DataSource ds;
 

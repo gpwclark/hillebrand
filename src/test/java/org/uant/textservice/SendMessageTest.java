@@ -2,12 +2,12 @@ package org.uant.textservice;
 
 import org.uant.textservice.message.ReceivedMessage;
 import org.uant.textservice.message.ReceivedMessageHandler;
-import org.uant.textservice.message.MockMessageGenerator;
+import org.uant.textservice.mockObjects.MockMessageGenerator;
 import org.uant.textservice.db.MessageDriver;
 import org.uant.textservice.db.MessageDb;
-import org.uant.textservice.db.TestEmailGenerator;
+import org.uant.textservice.data.TestEmailGenerator;
 import org.uant.textservice.message.SendMessageHandler;
-import org.uant.textservice.message.MockMessageSender;
+import org.uant.textservice.mockObjects.MockMessageSender;
 import org.uant.textservice.db.DataSourceFactory;
 import org.uant.textservice.mockData.getDDL;
 import org.uant.textservice.db.MessageDBO;
@@ -62,7 +62,7 @@ public class SendMessageTest extends TestCase {
             e.printStackTrace();
         }
         msgDb = new MessageDb(ds);
-        msgSender = new MockMessageSender(msgDb);
+        msgSender = new MockMessageSender();
     }
 
     @After
@@ -83,17 +83,14 @@ public class SendMessageTest extends TestCase {
         String validQuery = "aljdslskjdlkjldsjlsaSTATUSlkajaldskj";
 
         //valid query and resource
-            final String sender = testEmailGen.getRandomTestEmail();
-            final String body = validQuery;
-
-            ReceivedMessage msg = msgGetter.createMessage(sender, body);
+            ReceivedMessage msg = msgGetter.getMessage();
             msgDb.insertMessage(msg);
             //MessageDBO record = msgDb.getMessage(msg.hash);
             //record = msgSender.sendMessage(msg.hash);
             //msgDb.updateMessage(record);
 
             BlockingQueue<Integer> sendMsgPipe = new LinkedBlockingQueue<Integer>();
-            MessageSender ms = new MessageSender(sendMsgPipe);
+            MessageSender ms = new MessageSender(sendMsgPipe, msgSender);
             MessageDBO record = msgDb.getMessage(msg.hash);
 
             ms.sendMessage(msg.hash);

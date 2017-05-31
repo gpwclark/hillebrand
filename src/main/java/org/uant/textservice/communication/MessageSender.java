@@ -3,7 +3,6 @@ package org.uant.textservice.communication;
 import org.uant.textservice.db.MessageDriver;
 import org.uant.textservice.db.MessageDb;
 import org.uant.textservice.message.SendMessageHandler;
-import org.uant.textservice.message.MockMessageSender;
 import org.uant.textservice.db.DataSourceFactory;
 import org.uant.textservice.db.MessageDBO;
 
@@ -23,10 +22,10 @@ public class MessageSender {
     private MessageDBO record;
     //private final BlockingQueue<Integer> deleteMsgPipe;
 
-    public MessageSender(BlockingQueue<Integer> sendMsgPipe) { //& BlockingQueue<Integer> deleteMsgPipe
+    public MessageSender(BlockingQueue<Integer> sendMsgPipe, SendMessageHandler msgSender) { //& BlockingQueue<Integer> deleteMsgPipe
         this.ds = DataSourceFactory.getMySQLDataSource();
         this.msgDb = new MessageDb(ds);
-        this.msgSender = new MockMessageSender(msgDb);
+        this.msgSender = msgSender;
         this.sendMsgPipe = sendMsgPipe;
     }
 
@@ -58,6 +57,8 @@ public class MessageSender {
         this.record = this.msgDb.getMessage(newMsgHash);
         this.record = this.msgSender.sendMessage(record);
         this.record.setSent(true);
+        //TODO handle failure?
+        msgSender.sendMessage(this.record);
         msgDb.updateMessage(this.record);
     }
 }

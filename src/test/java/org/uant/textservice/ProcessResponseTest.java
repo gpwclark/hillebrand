@@ -2,12 +2,12 @@ package org.uant.textservice;
 
 import org.uant.textservice.message.ReceivedMessage;
 import org.uant.textservice.message.ReceivedMessageHandler;
-import org.uant.textservice.message.MockMessageGenerator;
+import org.uant.textservice.mockObjects.MockMessageGenerator;
 import org.uant.textservice.db.ResourceDriver;
 import org.uant.textservice.db.ResourceDb;
 import org.uant.textservice.db.MessageDriver;
 import org.uant.textservice.db.MessageDb;
-import org.uant.textservice.db.TestEmailGenerator;
+import org.uant.textservice.data.TestEmailGenerator;
 import org.uant.textservice.logic.ProcessResponse;
 import org.uant.textservice.db.DataSourceFactory;
 import org.uant.textservice.db.MessageDBO;
@@ -87,19 +87,19 @@ public class ProcessResponseTest extends TestCase {
 
     @Test
     public void testProcessResponse() {
-        String validQuery = "aljdslskjdlkjldsjlsaSTATUSlkajaldskj";
-        String validQuery1 = "aljdslskjdlkjldsjlsastatusssslkajaldskj";
-        String invalidQuery = "lakjdlksjdlksajdlanlkjwna;oiuw;nwnwwlkja;s?><M";
+        String body = "aljdslskjdlkjldsjlsaSTATUSlkajaldskj";
+        String body1 = "lakjdlksjdlksajdlanlkjwna;oiuw;nwnwwlkja;s?><M";
+        String body2 = "aljdslskjdlkjldsjlsastatusssslkajaldskj";
+        String sender = "resource10@localhost.com";
+        String sender1 = "resource199@localhost.com";
+        String sender2 = "invalid@email.com";
         BlockingQueue<Integer> processMsgPipe = new LinkedBlockingQueue<Integer>();
         BlockingQueue<Integer> sendMsgPipe = new LinkedBlockingQueue<Integer>();
 
         MessageProcessor mp = new MessageProcessor(processMsgPipe, sendMsgPipe);
 
         //valid query and resource
-        final String sender = testEmailGen.getRandomTestEmail();
-        final String body = validQuery;
-
-        ReceivedMessage msg = msgGetter.createMessage(sender, body);
+        ReceivedMessage msg = msgGetter.getMessage();
         msgDb.insertMessage(msg);
 
         //MessageDBO record = pr.processMessageResponse(msg.hash);
@@ -114,10 +114,8 @@ public class ProcessResponseTest extends TestCase {
         assertEquals(false, record.getSent());
 
         //invalid query and valid resource
-        final String sender1 = testEmailGen.getRandomTestEmail();
-        final String body1 = invalidQuery;
 
-        ReceivedMessage msg1 = msgGetter.createMessage(sender1, body1);
+        ReceivedMessage msg1 = msgGetter.getMessage();
         msgDb.insertMessage(msg1);
 
         //MessageDBO record1 = pr.processMessageResponse(msg1.hash);
@@ -132,10 +130,7 @@ public class ProcessResponseTest extends TestCase {
         assertEquals(false, record.getSent());
 
         //valid query and invalid resource
-        final String sender2 = "invalid@email.com";
-        final String body2 = validQuery1;
-
-        ReceivedMessage msg2 = msgGetter.createMessage(sender2, body2);
+        ReceivedMessage msg2 = msgGetter.getMessage();
         msgDb.insertMessage(msg2);
 
         mp.processMessage(msg2.hash);

@@ -7,5 +7,5 @@ import org.uant.textservice.message.ReceivedMessage;
  */
 
 public interface ReceivedMessageHandler {
-    ReceivedMessage createMessage(String sender, String body);
+    ReceivedMessage getMessage();
 }
