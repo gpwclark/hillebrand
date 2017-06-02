@@ -1,11 +1,12 @@
 package org.uant.textservice.message;
 
 import org.uant.textservice.message.ReceivedMessage;
+import java.util.ArrayList;
 
 /*
  *
  */
 
 public interface ReceivedMessageHandler {
-    ReceivedMessage getMessage();
+    ArrayList<ReceivedMessage> getMessages();
 }

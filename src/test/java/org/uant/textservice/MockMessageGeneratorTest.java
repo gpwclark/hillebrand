@@ -22,6 +22,7 @@ import java.util.Properties;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import java.util.ArrayList;
 
 /**
  * Unit test for MockMessageGenerator
@@ -60,7 +61,8 @@ public class MockMessageGeneratorTest extends TestCase {
     @Test
     public void testgetMessage() {
 
-        ReceivedMessage msg = msgGetter.getMessage();
+        ArrayList<ReceivedMessage> msgs = msgGetter.getMessages();
+        ReceivedMessage msg = msgs.get(0);
         assertNotNull(msg.sender);
         assertNotNull(msg.body);
         assertNotNull(msg.timestamp);

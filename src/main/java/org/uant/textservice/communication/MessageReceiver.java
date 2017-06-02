@@ -17,12 +17,15 @@ import java.lang.Runnable;
 import java.util.concurrent.BlockingQueue;
 import org.uant.textservice.message.ReceivedMessageHandler;
 import java.lang.InterruptedException;
+import java.util.ArrayList;
 
 public class MessageReceiver  {
     private MessageDriver msgDb;
     private DataSource ds;
     private ReceivedMessageHandler messageHandler;
     private final BlockingQueue<Integer> processMsgPipe;
+    private ArrayList<ReceivedMessage> newMsgs = new ArrayList<ReceivedMessage>();
+    private ArrayList<Integer> newMsgHashes = new ArrayList<Integer>();
 
     public MessageReceiver(ReceivedMessageHandler messageHandler, BlockingQueue<Integer> processMsgPipe) {
         this.ds = DataSourceFactory.getMySQLDataSource();
@@ -34,15 +37,19 @@ public class MessageReceiver  {
     public void start() {
         new Thread(new Runnable() {
             public void run() {
-                int newMsgHash;
                 while (true) {
                     //TODO would we ever want to break out of here?
                     // poison pill?
                     // http://web.mit.edu/6.005/www/fa14/classes/20-queues-locks/message-passing/
                     try {
-                        newMsgHash = receiveMessage();
+                        //TODO make LL
+                        newMsgs.clear();
+                        newMsgHashes.clear();
+                        receiveMessages();
 
-                        processMsgPipe.put(newMsgHash);
+                        for (Integer newMsgHash : newMsgHashes){
+                            processMsgPipe.put(newMsgHash);
+                        }
                     } catch (InterruptedException ex) {
                         ex.printStackTrace();
                     }
@@ -51,9 +58,12 @@ public class MessageReceiver  {
         }).start();
     }
 
-    public int receiveMessage() {
-        ReceivedMessage newMsg = this.messageHandler.getMessage();
-        this.msgDb.insertMessage(newMsg);
-        return newMsg.hash;
+    public ArrayList<Integer> receiveMessages() {
+        newMsgs = this.messageHandler.getMessages();
+        for (ReceivedMessage msg : newMsgs) {
+            msgDb.insertMessage(msg);
+            newMsgHashes.add(msg.hash);
+        }
+        return newMsgHashes;
     }
 }

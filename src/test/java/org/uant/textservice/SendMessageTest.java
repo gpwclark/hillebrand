@@ -11,6 +11,7 @@ import org.uant.textservice.mockObjects.MockMessageSender;
 import org.uant.textservice.db.DataSourceFactory;
 import org.uant.textservice.mockData.getDDL;
 import org.uant.textservice.db.MessageDBO;
+import java.util.ArrayList;
 
 import javax.sql.DataSource;
 import java.sql.*;
@@ -83,7 +84,8 @@ public class SendMessageTest extends TestCase {
         String validQuery = "aljdslskjdlkjldsjlsaSTATUSlkajaldskj";
 
         //valid query and resource
-            ReceivedMessage msg = msgGetter.getMessage();
+            ArrayList<ReceivedMessage> msgs = msgGetter.getMessages();
+            ReceivedMessage msg = msgs.get(0);
             msgDb.insertMessage(msg);
             //MessageDBO record = msgDb.getMessage(msg.hash);
             //record = msgSender.sendMessage(msg.hash);

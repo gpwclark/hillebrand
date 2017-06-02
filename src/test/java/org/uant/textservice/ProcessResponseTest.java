@@ -30,6 +30,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import java.util.ArrayList;
 
 import java.io.IOException;
 
@@ -99,7 +100,8 @@ public class ProcessResponseTest extends TestCase {
         MessageProcessor mp = new MessageProcessor(processMsgPipe, sendMsgPipe);
 
         //valid query and resource
-        ReceivedMessage msg = msgGetter.getMessage();
+        ArrayList<ReceivedMessage> msgs = msgGetter.getMessages();
+        ReceivedMessage msg = msgs.get(0);
         msgDb.insertMessage(msg);
 
         //MessageDBO record = pr.processMessageResponse(msg.hash);
@@ -115,7 +117,8 @@ public class ProcessResponseTest extends TestCase {
 
         //invalid query and valid resource
 
-        ReceivedMessage msg1 = msgGetter.getMessage();
+        ArrayList<ReceivedMessage> msgs1 = msgGetter.getMessages();
+        ReceivedMessage msg1 = msgs1.get(0);
         msgDb.insertMessage(msg1);
 
         //MessageDBO record1 = pr.processMessageResponse(msg1.hash);
@@ -130,7 +133,8 @@ public class ProcessResponseTest extends TestCase {
         assertEquals(false, record.getSent());
 
         //valid query and invalid resource
-        ReceivedMessage msg2 = msgGetter.getMessage();
+        ArrayList<ReceivedMessage> msgs2 = msgGetter.getMessages();
+        ReceivedMessage msg2 = msgs2.get(0);
         msgDb.insertMessage(msg2);
 
         mp.processMessage(msg2.hash);

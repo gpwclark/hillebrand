@@ -2,6 +2,7 @@ package org.uant.textservice.mockObjects;
 
 import org.uant.textservice.message.ReceivedMessage;
 import org.uant.textservice.message.ReceivedMessageHandler;
+import java.util.ArrayList;
 import java.util.Date;
 
 /*
@@ -20,7 +21,8 @@ public class MockMessageGenerator implements ReceivedMessageHandler {
     String newSender;
     String newBody;
 
-    public ReceivedMessage getMessage() {
+    public ArrayList<ReceivedMessage> getMessages() {
+        ArrayList<ReceivedMessage> newMessages = new ArrayList<ReceivedMessage>();
         final long timestamp = date.getTime();
         if (timeCalled == 0) {
             newSender = sender;
@@ -36,6 +38,7 @@ public class MockMessageGenerator implements ReceivedMessageHandler {
 
         System.out.println("sender " + newSender);
         System.out.println("body " + newBody);
-        return new ReceivedMessage(newSender, newBody, timestamp);
+        newMessages.add(new ReceivedMessage(newSender, newBody, timestamp));
+        return newMessages;
     }
 }
