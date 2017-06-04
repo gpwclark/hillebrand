@@ -42,6 +42,7 @@ public class MessageReceiver  {
                     // poison pill?
                     // http://web.mit.edu/6.005/www/fa14/classes/20-queues-locks/message-passing/
                     try {
+                        Thread.sleep(10000);
                         //TODO make LL
                         newMsgs.clear();
                         newMsgHashes.clear();

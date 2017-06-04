@@ -3,14 +3,12 @@ package org.uant.textservice.mockObjects;
 import org.uant.textservice.message.ReceivedMessage;
 import org.uant.textservice.message.ReceivedMessageHandler;
 import java.util.ArrayList;
-import java.util.Date;
 
 /*
  *
  */
 
 public class MockMessageGenerator implements ReceivedMessageHandler {
-    Date date = new Date();
     int timeCalled = 0;
     String body = "aljdslskjdlkjldsjlsaSTATUSlkajaldskj";
     String body1 = "lakjdlksjdlksajdlanlkjwna;oiuw;nwnwwlkja;s?><M";
@@ -23,7 +21,6 @@ public class MockMessageGenerator implements ReceivedMessageHandler {
 
     public ArrayList<ReceivedMessage> getMessages() {
         ArrayList<ReceivedMessage> newMessages = new ArrayList<ReceivedMessage>();
-        final long timestamp = date.getTime();
         if (timeCalled == 0) {
             newSender = sender;
             newBody = body;
@@ -38,7 +35,7 @@ public class MockMessageGenerator implements ReceivedMessageHandler {
 
         System.out.println("sender " + newSender);
         System.out.println("body " + newBody);
-        newMessages.add(new ReceivedMessage(newSender, newBody, timestamp));
+        newMessages.add(new ReceivedMessage(newSender, newBody));
         return newMessages;
     }
 }

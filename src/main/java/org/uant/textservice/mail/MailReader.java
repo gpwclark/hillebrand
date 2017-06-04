@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Properties;
 import javax.mail.Address;
 import javax.mail.internet.InternetAddress;
-import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.Multipart;
 import javax.mail.Part;
@@ -16,7 +15,6 @@ import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
 import javax.mail.NoSuchProviderException;
 import javax.mail.AuthenticationFailedException;
-import javax.mail.FolderNotFoundException;
 import java.io.IOException;
 import java.lang.IllegalStateException;
 import com.sun.mail.util.MailConnectException;
@@ -65,6 +63,16 @@ public class MailReader {
         }
 
         return messages;
+    }
+
+    public void markMessagesDeleted() throws MessagingException {
+        for (Message message : this.messages) {
+            try {
+                message.setFlag(Flags.Flag.DELETED, true);
+            } catch (MessagingException ex) {
+                ex.printStackTrace();
+            }
+        }
     }
 
     /**

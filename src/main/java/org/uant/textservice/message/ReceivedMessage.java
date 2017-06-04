@@ -1,5 +1,6 @@
 package org.uant.textservice.message;
 
+import java.util.Date;
 /*
  *
  */
@@ -10,10 +11,11 @@ public class ReceivedMessage {
     public final long timestamp;
     public final int hash;
 
-    public ReceivedMessage(String sender, String body, long timestamp){
+    public ReceivedMessage(String sender, String body){
         this.sender = sender;
         this.body = body;
-        this.timestamp = timestamp;
+        //TODO static import?
+        this.timestamp = new Date().getTime();
         String strToHash = this.sender + this.body + Long.toString(timestamp);
         this.hash = strToHash.hashCode();
     }

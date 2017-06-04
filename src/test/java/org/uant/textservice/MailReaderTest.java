@@ -115,7 +115,8 @@ public class MailReaderTest extends TestCase {
    }
 
     MailRetriever mailbox = new MailRetriever(store);
-    MailReader reader = new MailReader(mailbox.getNewEmail());
+    Message[] emailMessages = mailbox.getNewEmail();
+    MailReader reader = new MailReader(emailMessages);
 
     // Verify inbox has no read messages
     assertEquals(reader.getNumFlags(Flags.Flag.SEEN), 0);
@@ -126,7 +127,6 @@ public class MailReaderTest extends TestCase {
 
     // Verify emails have correct content
     for (int i =0; i < messages.size(); ++i){
-
       assertNotNull(messages.get(i));
       assertTrue(String.valueOf(messages.get(i).emailBody).contains(GreenMailConfig.EMAIL_TEXT));
       assertEquals(EMAILS_TO[i], messages.get(i).email);
@@ -136,6 +136,9 @@ public class MailReaderTest extends TestCase {
     // Verify emails have all been read
     assertEquals(reader.getNumFlags(Flags.Flag.SEEN), EMAILS_TO.length);
 
+    reader.markMessagesDeleted();
+
+    assertEquals(reader.getNumFlags(Flags.Flag.DELETED), EMAILS_TO.length);
 
     mailbox.closeMailbox();
   }
