@@ -94,16 +94,11 @@ public class EmailMessageGetterTest extends TestCase {
         // use greenmail to store the message
         user.deliver(message);
 
-        String newHost = GreenMailConfig.LOCALHOST;
-        String newPort = "3993";
-        String newProtocol = "imaps";
-
-        IMAPConfig imapConfig = new IMAPConfig(newHost, newPort, newProtocol);
-        MailAuthenticator mailAuth = new MailAuthenticator(user.getLogin(), user.getPassword());
-
+        String mailAuth = "properties/testMailAuth.properties";
+        String imapConfig = "properties/testImap.properties";
         EmailMessageGetter emg = new EmailMessageGetter(mailAuth, imapConfig);
 
-            ArrayList<ReceivedMessage> newMessages = null;
+        ArrayList<ReceivedMessage> newMessages = null;
         try {
             newMessages = emg.getMessages();
         } catch (Exception e) {

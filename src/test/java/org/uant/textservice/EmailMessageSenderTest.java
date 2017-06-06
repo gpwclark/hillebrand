@@ -1,5 +1,6 @@
 package org.uant.textservice;
 
+import org.uant.textservice.db.MessageDBO;
 import org.uant.textservice.mail.EmailMessageSender;
 import org.uant.textservice.mail.MailSender;
 import org.uant.textservice.mail.MailConnector;
@@ -77,32 +78,19 @@ public class EmailMessageSenderTest extends TestCase {
         // create user on mail server
         GreenMailUser user = mailServer.setUser(GreenMailConfig.EMAIL_USER_ADDRESS, GreenMailConfig.USER_NAME, GreenMailConfig.USER_PASSWORD);
 
-        MailAuthenticator mailAuth = new MailAuthenticator(user.getLogin(), user.getPassword());
+        String mailAuth = "properties/testMailAuth.properties";
+        String smtpConfig = "properties/testSmtp.properties";
 
-        String newHost = GreenMailConfig.LOCALHOST;
-        String newPort = "3465";
-        String newProtocol = "smtps";
-        String newEmail =  GreenMailConfig.EMAIL_USER_ADDRESS;
-
-        SMTPConfig smtpConfig = new SMTPConfig(newHost, newPort, newProtocol, newEmail);
-        //SMTPConfig smtpConfig = new SMTPConfig(GreenMailConfig.LOCALHOST, "3465", "smtps", GreenMailConfig.EMAIL_USER_ADDRESS);
+        EmailMessageSender ems = new EmailMessageSender(mailAuth, smtpConfig);
+        MessageDBO message = new  MessageDBO(822, GreenMailConfig.EMAIL_TO, "status", GreenMailConfig.EMAIL_TEXT, true, true, false, true, 87);
 
         // need to deal with
-        Transport transport = null;
+        MessageDBO sentMessage = null;
         try {
-            MailConnector mailConn = MailConnector.getMailConnectorObj();
-            mailConn.InitMailConnectorTransport(smtpConfig, mailAuth);
-            transport = mailConn.getTransport();
-
-            MailSender service = new MailSender(transport, smtpConfig);
-            service.sendMessage(GreenMailConfig.EMAIL_TO, GreenMailConfig.EMAIL_TEXT);
-            service.closeService();
-
+            sentMessage = ems.sendMessage(message);
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-
 
         // fetch messages from server
         MimeMessage[] messages = mailServer.getReceivedMessages();

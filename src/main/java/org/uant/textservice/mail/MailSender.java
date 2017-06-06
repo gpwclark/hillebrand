@@ -60,7 +60,7 @@ public class MailSender {
             transport.close();
         } catch (MessagingException ex){
 
-            System.out.println("Messaging Exception, message store is unreachable");
+            System.out.println("Messaging Exception, message transport is uncloseable");
             ex.printStackTrace();
         }
     }

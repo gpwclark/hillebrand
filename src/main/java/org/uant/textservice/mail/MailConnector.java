@@ -99,6 +99,7 @@ public class MailConnector {
                 ex.printStackTrace();
             } catch (NoSuchProviderException ex) {
 
+                System.out.println("Failed to connect with protocol");
                 ex.printStackTrace();
             } catch (AuthenticationFailedException ex) {
 

@@ -1,5 +1,6 @@
 package org.uant.textservice.mail;
 
+import org.uant.textservice.db.DataSourceFactory;
 import org.uant.textservice.mail.MailSender;
 import org.uant.textservice.mail.MessageWrapper;
 import org.uant.textservice.mail.MailRetriever;
@@ -29,12 +30,12 @@ public class EmailMessageGetter implements ReceivedMessageHandler {
     MailAuthenticator mailAuth;
     IMAPConfig imapConfig;
 
-    public EmailMessageGetter(MailAuthenticator mailAuth, IMAPConfig imapConfig) {
+    public EmailMessageGetter(String mailAuthProps, String imapProps) {
         //TODO it looks like there is a specic way to retrieve pwd
         //on commandline with the javax.mail API look into this
         //as a safer alternative!
-        this.mailAuth = mailAuth;
-        this.imapConfig = imapConfig;
+        this.mailAuth = DataSourceFactory.getMailAuth(mailAuthProps);
+        this.imapConfig = DataSourceFactory.getImapConfig(imapProps);
 
     }
 
@@ -46,7 +47,7 @@ public class EmailMessageGetter implements ReceivedMessageHandler {
 
         try {
             MailConnector mailConn = MailConnector.getMailConnectorObj();
-            mailConn.InitMailConnectorStore(this.imapConfig, mailAuth);
+            mailConn.InitMailConnectorStore(this.imapConfig, this.mailAuth);
             store = mailConn.getStore();
 
             /* initialize mailbox */

@@ -1,5 +1,6 @@
 package org.uant.textservice.mail;
 
+import org.uant.textservice.db.DataSourceFactory;
 import org.uant.textservice.mail.MailSender;
 import org.uant.textservice.mail.MessageWrapper;
 import org.uant.textservice.mail.MailRetriever;
@@ -30,12 +31,12 @@ public class EmailMessageSender implements SendMessageHandler {
     MailAuthenticator mailAuth;
     SMTPConfig smtpConfig;
 
-    public EmailMessageSender(MailAuthenticator mailAuth, SMTPConfig smtpConfig) {
+    public EmailMessageSender(String mailAuthProps, String smtpProps) {
         //TODO it looks like there is a specic way to retrieve pwd
         //on commandline with the javax.mail API look into this
         //as a safer alternative!
-        this.mailAuth = mailAuth;
-        this.smtpConfig = smtpConfig;
+        this.mailAuth = DataSourceFactory.getMailAuth(mailAuthProps);
+        this.smtpConfig = DataSourceFactory.getSmtpConfig(smtpProps);
 
     }
 
@@ -77,6 +78,7 @@ public class EmailMessageSender implements SendMessageHandler {
         } catch (MessagingException ex) {
             throw ex;
         }
+        //TODO movie in try catch?
         service.sendMessage(email_to, email_body);
         service.closeService();
     }
