@@ -25,8 +25,8 @@ public class MessageProcessor {
     private final BlockingQueue<Integer> sendMsgPipe;
     private MessageDBO record;
 
-    public MessageProcessor(BlockingQueue<Integer> processMsgPipe, BlockingQueue<Integer> sendMsgPipe) {
-        this. ds = DataSourceFactory.getMySQLDataSource();
+    public MessageProcessor(BlockingQueue<Integer> processMsgPipe, BlockingQueue<Integer> sendMsgPipe, String dbProps) {
+        this. ds = DataSourceFactory.getMySQLDataSource(dbProps);
         this.resourceDb = new ResourceDb(ds);
         this.msgDb = new MessageDb(ds);
         this.pr = new ProcessResponse(resourceDb, msgDb);

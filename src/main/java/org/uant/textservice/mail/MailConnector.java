@@ -134,7 +134,7 @@ public class MailConnector {
             try {
 
                 session = Session.getInstance(properties, this.mailAuth);
-                session.setDebug(true);
+                session.setDebug(false);
 
                 this.transport = session.getTransport(this.smtpConfig.getProtocol());
 

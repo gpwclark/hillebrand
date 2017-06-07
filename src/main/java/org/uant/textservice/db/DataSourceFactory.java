@@ -17,12 +17,12 @@ import org.uant.textservice.mail.SMTPConfig;
 
 public class DataSourceFactory {
 
-    public static DataSource getMySQLDataSource() {
+    public static DataSource getMySQLDataSource(String dbProps) {
         Properties props = new Properties();
         FileInputStream fis = null;
         JdbcDataSource mysqlDS = null;
         try {
-            fis = new FileInputStream("properties/db.properties");
+            fis = new FileInputStream(dbProps);
             props.load(fis);
             mysqlDS = new JdbcDataSource();
             mysqlDS.setURL(props.getProperty("MYSQL_DB_URL"));

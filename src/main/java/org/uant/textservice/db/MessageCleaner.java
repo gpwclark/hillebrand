@@ -1,4 +1,4 @@
-package org.uant.textservice.communication;
+package org.uant.textservice.db;
 
 import org.uant.textservice.db.MessageDriver;
 import org.uant.textservice.db.MessageDb;
@@ -23,18 +23,17 @@ public class MessageCleaner {
     long someTimeAgo;
     //private final BlockingQueue<Integer> deleteMsgPipe;
 
-    public MessageCleaner() { //& BlockingQueue<Integer> deleteMsgPipe
-        this.ds = DataSourceFactory.getMySQLDataSource();
+    public MessageCleaner(String dbProps) { //& BlockingQueue<Integer> deleteMsgPipe
+        this.ds = DataSourceFactory.getMySQLDataSource(dbProps);
         this.msgDb = new MessageDb(ds);
         //TODO get config.properties to un-hardcode values
-        this.threadSleepTime = 30000;
+        this.threadSleepTime = 5000;
         this.oldMessageThreshold = TimeUnit.MINUTES.toMillis(2);
     }
 
     public void start() {
         new Thread(new Runnable() {
             public void run() {
-                int newMsgHash;
                 while (true) {
                     //TODO would we ever want to break out of here?
                     try {

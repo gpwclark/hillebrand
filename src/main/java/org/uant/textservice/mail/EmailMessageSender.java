@@ -30,6 +30,9 @@ public class EmailMessageSender implements SendMessageHandler {
 
     MailAuthenticator mailAuth;
     SMTPConfig smtpConfig;
+    MailConnector mailConn;
+    Transport transport;
+    MailSender service;
 
     public EmailMessageSender(String mailAuthProps, String smtpProps) {
         //TODO it looks like there is a specic way to retrieve pwd
@@ -37,20 +40,26 @@ public class EmailMessageSender implements SendMessageHandler {
         //as a safer alternative!
         this.mailAuth = DataSourceFactory.getMailAuth(mailAuthProps);
         this.smtpConfig = DataSourceFactory.getSmtpConfig(smtpProps);
+        this.transport = null;
+        this.service = null;
 
     }
 
     public MessageDBO sendMessage(MessageDBO message) {
         //TODO interval at which program sleeps before checking mailbox again.
-        Transport transport = null;
-        ArrayList<ReceivedMessage> newMessages = new ArrayList<ReceivedMessage>();
 
         try {
-            MailConnector mailConn = MailConnector.getMailConnectorObj();
-            mailConn.InitMailConnectorTransport(this.smtpConfig, this.mailAuth);
-            transport = mailConn.getTransport();
+            //TODO check isConnected() to avoid init
+            //OR have mailconnector take care of that?
+            if (this.transport != null && this.transport.isConnected()){
+                sendMessage(this.transport, this.smtpConfig, message.getSender(), message.getResponse());
+            } else {
+                this.mailConn = MailConnector.getMailConnectorObj();
+                this.mailConn.InitMailConnectorTransport(this.smtpConfig, this.mailAuth);
+                this.transport = this.mailConn.getTransport();
 
-            sendMessage(transport, this.smtpConfig, message.getSender(), message.getResponse());
+                sendMessage(this.transport, this.smtpConfig, message.getSender(), message.getResponse());
+            }
 
         } catch(MessagingException ex){
             System.out.println("Failed to connect in main loop");
@@ -65,10 +74,9 @@ public class EmailMessageSender implements SendMessageHandler {
             String email_to,
             String email_body) throws MessagingException {
 
-        MailSender service = null;
 
         try {
-            service = new MailSender(transport, this.smtpConfig);
+            this.service = new MailSender(transport, this.smtpConfig);
         } catch (AuthenticationFailedException ex) {
             System.out.println("Fatal error, restart application with correct cmd line arguments");
             ex.printStackTrace();
@@ -79,8 +87,8 @@ public class EmailMessageSender implements SendMessageHandler {
             throw ex;
         }
         //TODO movie in try catch?
-        service.sendMessage(email_to, email_body);
-        service.closeService();
+        this.service.sendMessage(email_to, email_body);
+        this.service.closeService();
     }
 
 }

@@ -53,7 +53,7 @@ public class SendMessageTest extends TestCase {
     public void setUp() {
         testEmailGen = new TestEmailGenerator();
         msgGetter = new MockMessageGenerator();
-        DataSource ds = DataSourceFactory.getMySQLDataSource();
+        DataSource ds = DataSourceFactory.getMySQLDataSource("properties/testDb.properties");
         try (
                 Connection conn = ds.getConnection();
             ){
@@ -68,7 +68,7 @@ public class SendMessageTest extends TestCase {
 
     @After
     public void tearDown() {
-        DataSource ds = DataSourceFactory.getMySQLDataSource();
+        DataSource ds = DataSourceFactory.getMySQLDataSource("properties/testDb.properties");
         try (
                 Connection conn = ds.getConnection();
             ){
@@ -92,7 +92,7 @@ public class SendMessageTest extends TestCase {
             //msgDb.updateMessage(record);
 
             BlockingQueue<Integer> sendMsgPipe = new LinkedBlockingQueue<Integer>();
-            MessageSender ms = new MessageSender(sendMsgPipe, msgSender);
+            MessageSender ms = new MessageSender(sendMsgPipe, msgSender, "properties/testDb.properties");
             MessageDBO record = msgDb.getMessage(msg.hash);
 
             ms.sendMessage(msg.hash);

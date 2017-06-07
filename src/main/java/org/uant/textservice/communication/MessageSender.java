@@ -22,8 +22,8 @@ public class MessageSender {
     private MessageDBO record;
     //private final BlockingQueue<Integer> deleteMsgPipe;
 
-    public MessageSender(BlockingQueue<Integer> sendMsgPipe, SendMessageHandler msgSender) { //& BlockingQueue<Integer> deleteMsgPipe
-        this.ds = DataSourceFactory.getMySQLDataSource();
+    public MessageSender(BlockingQueue<Integer> sendMsgPipe, SendMessageHandler msgSender, String dbProps) { //& BlockingQueue<Integer> deleteMsgPipe
+        this.ds = DataSourceFactory.getMySQLDataSource(dbProps);
         this.msgDb = new MessageDb(ds);
         this.msgSender = msgSender;
         this.sendMsgPipe = sendMsgPipe;
@@ -57,8 +57,6 @@ public class MessageSender {
         this.record = this.msgDb.getMessage(newMsgHash);
         this.record = this.msgSender.sendMessage(record);
         this.record.setSent(true);
-        //TODO handle failure?
-        msgSender.sendMessage(this.record);
         msgDb.updateMessage(this.record);
     }
 }

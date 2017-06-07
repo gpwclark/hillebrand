@@ -27,8 +27,8 @@ public class MessageReceiver  {
     private ArrayList<ReceivedMessage> newMsgs = new ArrayList<ReceivedMessage>();
     private ArrayList<Integer> newMsgHashes = new ArrayList<Integer>();
 
-    public MessageReceiver(ReceivedMessageHandler messageHandler, BlockingQueue<Integer> processMsgPipe) {
-        this.ds = DataSourceFactory.getMySQLDataSource();
+    public MessageReceiver(ReceivedMessageHandler messageHandler, BlockingQueue<Integer> processMsgPipe, String dbProps) {
+        this.ds = DataSourceFactory.getMySQLDataSource(dbProps);
         this.msgDb = new MessageDb(this.ds);
         this.processMsgPipe = processMsgPipe;
         this.messageHandler = messageHandler;

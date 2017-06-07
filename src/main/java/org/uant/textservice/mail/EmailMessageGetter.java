@@ -29,6 +29,12 @@ public class EmailMessageGetter implements ReceivedMessageHandler {
 
     MailAuthenticator mailAuth;
     IMAPConfig imapConfig;
+    ArrayList<ReceivedMessage> newMessages;
+    ArrayList<MessageWrapper> messages;
+    MailConnector mailConn;
+    Store store;
+    MailRetriever mailbox;
+    MailReader reader;
 
     public EmailMessageGetter(String mailAuthProps, String imapProps) {
         //TODO it looks like there is a specic way to retrieve pwd
@@ -36,40 +42,47 @@ public class EmailMessageGetter implements ReceivedMessageHandler {
         //as a safer alternative!
         this.mailAuth = DataSourceFactory.getMailAuth(mailAuthProps);
         this.imapConfig = DataSourceFactory.getImapConfig(imapProps);
-
+        this.messages = null;
+        this.store = null;
+        this.mailbox = null;
+        this.reader = null;
     }
 
     public ArrayList<ReceivedMessage> getMessages() {
         //TODO interval at which program sleeps before checking mailbox again.
         //Thread.sleep(10000);
-        Store store = null;
-        ArrayList<ReceivedMessage> newMessages = new ArrayList<ReceivedMessage>();
+        this.newMessages = new ArrayList<ReceivedMessage>();
 
         try {
-            MailConnector mailConn = MailConnector.getMailConnectorObj();
-            mailConn.InitMailConnectorStore(this.imapConfig, this.mailAuth);
-            store = mailConn.getStore();
+            //TODO check isconnected to avoid init.
+            //OR have mailconnector take care of that?
+            if (this.store == null || !this.store.isConnected()){
+                this.mailConn = MailConnector.getMailConnectorObj();
+                this.mailConn.InitMailConnectorStore(this.imapConfig, this.mailAuth);
+                this.store = mailConn.getStore();
+            }
 
             /* initialize mailbox */
-            MailRetriever mailbox = new MailRetriever(store);
+            this.mailbox = new MailRetriever(this.store);
 
             /* check mailbox and get messages in list */
-            MailReader reader = new MailReader(mailbox.getNewEmail());
-            ArrayList<MessageWrapper> messages = reader.readMessages();
+            this.reader = new MailReader(this.mailbox.getNewEmail());
+
+            this.messages = this.reader.readMessages();
 
             /* put emails in compatible textservice format */
-            for (MessageWrapper wrappedEmail : messages) {
-                newMessages.add(new ReceivedMessage(wrappedEmail.email , wrappedEmail.emailBody));
+            for (MessageWrapper wrappedEmail : this.messages) {
+                this.newMessages.add(new ReceivedMessage(wrappedEmail.email , wrappedEmail.emailBody));
             }
-            reader.markMessagesDeleted();
+            this.reader.markMessagesDeleted();
 
             /* close mailbox (deletes messages) */
-            mailbox.closeMailbox();
+            this.mailbox.closeMailbox();
 
         } catch(MessagingException ex){
             System.out.println("Failed to get messages");
             ex.printStackTrace();
         }
-        return newMessages;
+        return this.newMessages;
     }
 }

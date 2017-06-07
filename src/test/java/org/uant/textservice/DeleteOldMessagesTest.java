@@ -56,7 +56,7 @@ public class DeleteOldMessagesTest extends TestCase {
 
     @Before
     public void setUp() {
-        DataSource ds = DataSourceFactory.getMySQLDataSource();
+        DataSource ds = DataSourceFactory.getMySQLDataSource("properties/testDb.properties");
         try (
                 Connection conn = ds.getConnection();
             ){
@@ -70,7 +70,7 @@ public class DeleteOldMessagesTest extends TestCase {
 
     @After
     public void tearDown() {
-        DataSource ds = DataSourceFactory.getMySQLDataSource();
+        DataSource ds = DataSourceFactory.getMySQLDataSource("properties/testDb.properties");
         try (
                 Connection conn = ds.getConnection();
             ){

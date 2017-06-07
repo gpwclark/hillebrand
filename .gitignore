@@ -1,0 +1,12 @@
+/target/*
+/target/
+bin/*
+bin/.*
+graphs/outfile.svg
+.project
+.classpath
+.settings
+properties/mailAuth.properties
+properties/smtp.properties
+properties/imap.properties
+properties/db.properties

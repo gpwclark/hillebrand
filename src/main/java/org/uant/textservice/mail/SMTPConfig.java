@@ -29,7 +29,7 @@ public class SMTPConfig extends MailConfig {
     this.props.setProperty("mail.smtp.host", host);
     this.props.setProperty("mail.smtp.port", port);
     this.props.setProperty("mail.smtp.starttls.enable", "true");
-    this.props.setProperty("mail.smtp.debug", "true");
+    this.props.setProperty("mail.smtp.debug", "false");
     this.props.setProperty("mail.smtp.auth", "true");
     this.props.setProperty("mail.smtp.socketFactory.port", port);
     this.props.setProperty("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");

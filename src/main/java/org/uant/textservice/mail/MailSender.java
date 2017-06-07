@@ -25,9 +25,9 @@ public class MailSender {
     Transport transport;
 
     public MailSender(Transport transport, SMTPConfig smtpConfig)
-        throws MessagingException,
-                          AuthenticationFailedException,
-                          MailConnectException {
+                                        throws MessagingException,
+                                               AuthenticationFailedException,
+                                               MailConnectException {
 
                    this.transport = transport;
                    this.smtpConfig = smtpConfig;
