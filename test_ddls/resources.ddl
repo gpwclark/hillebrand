@@ -1,10 +1,10 @@
 CREATE TABLE resources(
      id MEDIUMINT NOT NULL AUTO_INCREMENT,
-     email VARCHAR(254) NOT NULL,
+     resource VARCHAR(254) NOT NULL,
      PRIMARY KEY (id)
 );
 INSERT INTO resources
-    (`email`)
+    (`resource`)
 VALUES
     ('resource0@localhost.com'),
     ('resource1@localhost.com'),

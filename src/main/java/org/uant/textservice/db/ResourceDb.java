@@ -16,13 +16,13 @@ public final class ResourceDb implements ResourceDriver{
         boolean isValidResource = false;
         try (
               Connection conn = ds.getConnection();
-              PreparedStatement statement = conn.prepareStatement("SELECT email FROM resources WHERE email=?");
+              PreparedStatement statement = conn.prepareStatement("SELECT resource FROM resources WHERE resource=?");
             ) {
             statement.setString(1, resourceHandle);
 
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
-                    if (resourceHandle.equals(resultSet.getString("email")))
+                    if (resourceHandle.equals(resultSet.getString("resource")))
                         isValidResource = true;
                 }
             }
